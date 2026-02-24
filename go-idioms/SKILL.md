@@ -19,6 +19,7 @@ Apply the repository's Go coding standards and idiomatic Go practices. Keep this
 - Prefer clear, idiomatic Go and standard library solutions.
 - Keep error handling consistent (wrap with context, return early).
 - Keep exported docs and comments in English unless asked otherwise.
+- For testing, readability, and conventions, read `references/go-standards.md`.
 
 3. Reference
 - Read `references/go-standards.md` for the full Go standards and project rules.
