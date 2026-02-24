@@ -1,9 +1,9 @@
 ---
-name: go-idioms
+name: go-code-style
 description: Write, review, and refactor Go code using idiomatic Go practices and the repository's Go standards. Use when implementing Go features, fixing Go bugs, adding Go tests, or designing Go APIs in this codebase.
 ---
 
-# Go Idioms
+# Go Code Style
 
 ## Overview
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Go Idioms"
   short_description: "Idiomatic Go standards for this codebase"
-  default_prompt: "Use $go-idioms to apply the repository Go coding standards."
+  default_prompt: "Use $go-code-style to apply the repository Go coding standards."
