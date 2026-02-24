@@ -1,0 +1,4 @@
+interface:
+  display_name: "Error Handling (Go)"
+  short_description: "Go error handling patterns and practices"
+  default_prompt: "Use $error-handling-go to apply Go error handling patterns."

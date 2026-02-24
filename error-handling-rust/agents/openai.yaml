@@ -1,0 +1,4 @@
+interface:
+  display_name: "Error Handling (Rust)"
+  short_description: "Rust error handling patterns and practices"
+  default_prompt: "Use $error-handling-rust to apply Rust error handling patterns."

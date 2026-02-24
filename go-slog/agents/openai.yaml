@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Slog"
+  short_description: "Structured logging with log/slog in Go"
+  default_prompt: "Use $go-slog to add structured logging with log/slog."
