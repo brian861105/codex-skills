@@ -5,6 +5,8 @@ description: Guide for Temporal workflows using atb_temporal_ext macros. Covers 
 
 # Temporal Workflows
 
+For general Rust error-handling strategy (typed errors vs `anyhow`, `Result` vs `Option`, and context rules), follow the `Error Handling` section in `rust-code-style`.
+
 Register activities with helper macros from `atb_temporal_ext`. Import with `use atb_temporal_ext::{activity, local_activity};`, annotate each activity, then call the generated `bind_*` helpers.
 
 ## Running a Worker and Starting a Workflow
