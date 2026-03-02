@@ -1,11 +1,24 @@
 ---
 name: rust-code-style
-description: Code style conventions for the ai-editor Rust codebase. Covers documentation, testing, error handling, struct design, and naming patterns. Use when writing new Rust code or reviewing code quality.
+description: Code style conventions for the ai-editor Rust codebase. Covers documentation, code organization, naming, testing, error handling, async/concurrency, and performance patterns. Use when writing new Rust code or reviewing code quality.
 ---
 
 # Rust Code Style
 
 Code style patterns derived from `core/src/crdt` module.
+
+## Category Map
+
+Use this skill for style guidance only. Follow these categories:
+
+1. Documentation
+2. Code Organization
+3. Naming
+4. Testing
+5. Error Handling
+6. Async & Concurrency
+7. Performance & Iterators
+8. Helper Functions
 
 ## Documentation
 
@@ -141,65 +154,78 @@ async fn test_insert_and_get_document() {
 
 ## Error Handling
 
-### Return Types
+Use these rules to decide error types consistently.
 
-- **Application code**: `anyhow::Result<T>` for flexibility
-- **Library crates**: `thiserror` for public error types to allow callers to match on specific errors
-- **Internal functions**: Specific error types (`sqlx::Error`, `yrs::encoding::read::Error`)
-- **Optional values**: `Option<T>` with safe fallbacks
+### When to Add a `thiserror` Enum
+
+Add a typed `enum` (with `thiserror`) when all are true:
+
+- The code is library or public API surface.
+- Callers need deterministic `match` branches (`NotFound`, `Validation`, `Conflict`).
+- Error semantics should remain stable across module boundaries and tests.
 
 ```rust
-// Application code (bin/ai-editor)
-pub async fn load_from_store(pool: &PgPool, id: Uuid) -> anyhow::Result<Self> {
-    let data = crate::store::crdt::load_document(pool, id).await?;
-    // ...
-}
-
-// Library code (core crate) - use thiserror for public APIs
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Debug, Error)]
 pub enum DocumentError {
-    #[error("Document not found: {0}")]
+    #[error("document not found: {0}")]
     NotFound(Uuid),
-    
-    #[error("Invalid update format")]
-    InvalidUpdate(#[from] yrs::encoding::read::Error),
-    
-    #[error("Database error")]
-    Database(#[from] sqlx::Error),
-}
-
-pub async fn load_document(pool: &PgPool, id: Uuid) -> Result<Doc, DocumentError> {
-    // Callers can now match on specific errors
-}
-
-// Optional with safe fallback
-pub fn get_text(&self) -> String {
-    self.try_get_text().unwrap_or_default()
-}
-
-fn try_get_text(&self) -> Option<String> {
-    let txn = self.content.transact();
-    let f = txn.get_xml_fragment("content")?;
-    // ...
+    #[error("validation failed: {0}")]
+    Validation(String),
+    #[error("db error: {0}")]
+    Db(#[from] sqlx::Error),
 }
 ```
 
-### Why thiserror for Libraries?
+### When Not to Add an Enum
 
-Library error types with `thiserror` allow callers to handle specific cases:
+Do not add a new enum when:
+
+- The code is application orchestration (CLI/worker/service handlers).
+- Callers do not need error-variant branching.
+- You only need propagation with readable context.
+
+Use `anyhow` with context at app boundaries:
 
 ```rust
-match load_document(&pool, id).await {
-    Ok(doc) => process(doc),
-    Err(DocumentError::NotFound(_)) => create_new_document(),
-    Err(DocumentError::InvalidUpdate(_)) => retry_with_reset(),
-    Err(e) => return Err(e.into()),
+use anyhow::{Context, Result};
+
+pub async fn run_import(path: &str) -> Result<()> {
+    let contents = std::fs::read_to_string(path)
+        .with_context(|| format!("failed to read config file: {path}"))?;
+    parse_and_store(contents)
+        .context("failed to parse and persist import payload")?;
+    Ok(())
 }
 ```
 
-## Struct Design
+### `Result` vs `Option`
+
+- Use `Result<T, E>` when failure has diagnostic value.
+- Use `Option<T>` when absence is expected domain behavior.
+- Never downgrade diagnosable failures into `Option` just to avoid handling errors.
+
+### `unwrap` / `expect`
+
+- Allowed in tests.
+- Allowed in truly unreachable code with a short invariant comment.
+- Not allowed in production paths where failure is possible.
+
+### Context Rule
+
+Application-layer propagation must add semantic context at I/O and parse boundaries:
+
+- Filesystem/network reads
+- Serialization/deserialization
+- External API or database calls
+
+### Counterexample: Do Not Over-Model Internal Helpers
+
+If a private helper returns an error only to be immediately wrapped and never matched,
+prefer `anyhow` (app) or the existing parent error type instead of creating a new enum.
+
+## Data Types & Struct Design
 
 ### Public Interface with Private Fields
 
@@ -365,14 +391,14 @@ fn ensure_text_node(&self) -> XmlTextRef { }
 - `snake_case`: `pending_deltas`, `doc_state`, `action_id`
 - Descriptive: `adjusted_start`, `last_idx`, `text_len`
 
-## Async Patterns
+## Async & Concurrency
 
 ### Async Functions
 
 Use `async fn` for I/O operations:
 
 ```rust
-pub async fn load_from_store(pool: &PgPool, id: Uuid) -> anyhow::Result<Self> {
+pub async fn load_from_store(pool: &PgPool, id: Uuid) -> Result<Self, StoreError> {
     let data = crate::store::crdt::load_document(pool, id).await?;
     // ...
 }
@@ -400,7 +426,7 @@ pub fn apply_update(&self, update_data: &[u8]) -> Result<(), Error> {
 ### Concurrent Operations
 
 ```rust
-pub async fn get_or_load(&self, id: Uuid, pool: &PgPool) -> anyhow::Result<Arc<DocumentState>> {
+pub async fn get_or_load(&self, id: Uuid, pool: &PgPool) -> Result<Arc<DocumentState>, StoreError> {
     if let Some(doc) = self.get(id) {
         return Ok(doc);
     }

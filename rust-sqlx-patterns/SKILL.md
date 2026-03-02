@@ -5,6 +5,8 @@ description: Guide for writing SQLx database queries in Rust. Covers simple quer
 
 # Rust SQLx Patterns
 
+For general Rust error-handling strategy (typed errors vs `anyhow`, `Result` vs `Option`, and context rules), follow the `Error Handling` section in `rust-code-style`.
+
 ## Database Queries
 
 ### Simple Reads/Writes
