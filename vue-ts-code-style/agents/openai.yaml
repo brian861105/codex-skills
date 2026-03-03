@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vue Code Style (/html)"
+  short_description: "Vue-specific style, logging, and testing conventions for /html"
+  default_prompt: "Use $vue-ts-code-style for Vue-specific code style in /html, and combine with $ts-code-style for generic TypeScript rules."

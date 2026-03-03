@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Code Style"
+  short_description: "Framework-agnostic TypeScript style and lint mappings"
+  default_prompt: "Use $ts-code-style to enforce framework-agnostic TypeScript code style and lint mappings; failure-semantics changes MUST apply references/error-handling.md."

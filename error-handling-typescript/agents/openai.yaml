@@ -1,4 +1,4 @@
 interface:
   display_name: "Error Handling (TypeScript)"
-  short_description: "TypeScript error handling patterns and practices"
-  default_prompt: "Use $error-handling-typescript to apply TypeScript error handling patterns."
+  short_description: "Thin wrapper for TS error-handling rules referenced from ts-code-style"
+  default_prompt: "Use $error-handling-typescript for focused TS error handling; policy source is ../ts-code-style/references/error-handling.md."

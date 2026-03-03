@@ -1,56 +1,26 @@
 ---
 name: error-handling-typescript
-description: Apply TypeScript error handling patterns including custom errors, Result-style returns, and robust async error handling. Use when implementing TS features or reviewing error handling.
+description: Thin wrapper for TypeScript error-handling guidance. Use when users ask specifically about TS error handling; source of truth lives in ts-code-style/references/error-handling.md.
 ---
 
 # Error Handling (TypeScript)
 
-## Overview
+This is a thin wrapper skill for focused error-handling tasks.
 
-Use explicit error types, avoid silent failures, and handle async errors with clear boundaries.
+## Source of Truth
 
-## Core Guidelines
+- Primary policy lives in:
+  - `../ts-code-style/references/error-handling.md`
 
-- Throw typed/custom errors for meaningful failure modes.
-- Avoid empty `catch` blocks and avoid logging + rethrowing unless the boundary requires it.
-- Use Result-style returns for expected failures when appropriate.
-- In async code, prefer `try/catch` around awaited operations with targeted handling.
+## How to Use with `$ts-code-style`
 
-## Patterns
+- Prefer `$ts-code-style` as the main entry point.
+- When failure-semantic triggers are hit, apply the rules in `../ts-code-style/references/error-handling.md` (MUST).
+- Use this skill directly when the user asks specifically about TypeScript error handling.
 
-1. Custom error classes
-- Include `code`, `status`, and context fields when useful.
+## Trigger Conditions (MUST)
 
-2. Result type pattern
-- Return `{ ok: true, value }` or `{ ok: false, error }` for expected failures.
-
-## Examples
-
-```typescript
-class NotFoundError extends Error {
-  constructor(resource: string, id: string) {
-    super(`${resource} not found`);
-    this.name = "NotFoundError";
-  }
-}
-
-async function getUser(id: string): Promise<User> {
-  const user = await repo.findUser(id);
-  if (!user) {
-    throw new NotFoundError("User", id);
-  }
-  return user;
-}
-```
-
-```typescript
-type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
-
-function parseJSON<T>(input: string): Result<T, SyntaxError> {
-  try {
-    return { ok: true, value: JSON.parse(input) as T };
-  } catch (err) {
-    return { ok: false, error: err as SyntaxError };
-  }
-}
-```
+- Add or modify `try/catch` logic.
+- Add or modify `throw` logic or custom `Error` classes.
+- Add or modify async failure branches (`reject`, `.catch`, `Promise.all` fail paths).
+- Change error propagation contracts in boundary layers (`api`, `service`, `repository`, `adapter`).
