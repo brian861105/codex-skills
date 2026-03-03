@@ -2,6 +2,7 @@
 
 Apply these rules to `.ts` and `.tsx` files, plus TypeScript blocks in framework files.
 Naming rules TS-001 through TS-008 are aligned with [ts.dev style guide: Identifiers](https://ts.dev/style/#identifiers).
+For runnable ESLint settings, use `references/eslint-mapping.md`.
 
 ## Rule TS-001 (must): Base naming format by symbol type
 

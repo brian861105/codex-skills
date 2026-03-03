@@ -13,6 +13,12 @@ This skill is framework-agnostic and can be applied to TypeScript codebases acro
 - Linting: `eslint`, `@typescript-eslint`
 - Formatting: `prettier`
 - Naming source: `ts.dev/style/#identifiers`
+- Executable lint mapping: `references/eslint-mapping.md`
+
+## TypeScript Compiler Baseline
+
+- Use `references/tsconfig-baseline.md` as the minimum compiler safety baseline.
+- `must` compiler options are required unless a documented exception is approved.
 
 ## Category Map
 
@@ -25,13 +31,15 @@ This skill is framework-agnostic and can be applied to TypeScript codebases acro
 
 1. Detect TypeScript scope:
    - `.ts`, `.tsx`, shared helpers, composables/hooks, stores/services
-2. Enforce `must` rules first, then `should`, then `prefer`.
-3. For every recommendation, cite:
+2. If a change touches type safety, API boundaries, or error behavior, check `references/tsconfig-baseline.md`.
+3. If lint setup or rule enforcement is in scope, apply `references/eslint-mapping.md`.
+4. Enforce `must` rules first, then `should`, then `prefer`.
+5. For every recommendation, cite:
    - Rule ID
    - Intent
    - Lint mapping
    - A minimal bad/good example
-4. If any failure-semantic trigger is hit, MUST apply `references/error-handling.md`.
+6. If any failure-semantic trigger is hit, MUST apply `references/error-handling.md`.
 
 ## Error-handling Integration Contract
 
@@ -70,9 +78,12 @@ This skill is framework-agnostic and can be applied to TypeScript codebases acro
 - Imports are stable and type imports are explicit.
 - Async paths do not leave floating promises.
 - Failure-semantic triggers are checked; if hit, `references/error-handling.md` is explicitly applied.
+- Compiler baseline in `references/tsconfig-baseline.md` is checked; if current project is below baseline, risk is recorded in review notes.
 - Control flow avoids unnecessary nesting and keeps branches testable.
 
 ## References
 
 - TypeScript rules: `references/ts-rules.md`
 - Error handling rules: `references/error-handling.md`
+- TypeScript compiler baseline: `references/tsconfig-baseline.md`
+- ESLint executable mapping: `references/eslint-mapping.md`
