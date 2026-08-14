@@ -1,0 +1,4 @@
+interface:
+  display_name: "Contract-Driven TDD"
+  short_description: "Turn approved contracts into executable tests"
+  default_prompt: "Use $contract-driven-tdd to derive contract tests and implement this behavior one vertical slice at a time."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Scope Hygiene"
+  short_description: "Keep each test focused on one named behavior"
+  default_prompt: "Use $test-scope-hygiene to align each test name, fixture, action, and assertion with one behavior."

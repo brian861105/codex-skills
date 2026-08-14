@@ -1,0 +1,4 @@
+interface:
+  display_name: "Contract-First Gate"
+  short_description: "Agree on observable behavior before implementation"
+  default_prompt: "Use $contract-first-gate to compare material options and agree on a concise contract before implementation."

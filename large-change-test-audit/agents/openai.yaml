@@ -1,0 +1,4 @@
+interface:
+  display_name: "Large Change Test Audit"
+  short_description: "Audit unit tests in large implementation changes"
+  default_prompt: "Use $large-change-test-audit to independently review the unit-test changes in this large diff."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design-First Development"
+  short_description: "Design high-risk boundaries before implementation"
+  default_prompt: "Use $design-first-development to establish or verify the contract for this high-risk boundary before implementation."
