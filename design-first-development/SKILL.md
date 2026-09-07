@@ -1,103 +1,53 @@
 ---
 name: design-first-development
-description: Use before high-risk or cross-boundary behavior changes such as new or changed public APIs, state machines, persistence or fallback policies, provider mappings, shared data models, migrations, or architecture changes. Establish or verify a concise observable design contract in the repository's existing design location, falling back to docs/designs, before production code; then use contract-driven-tdd. Do not trigger for ordinary local features, contained behavior changes, refactors, or narrow bug fixes unless material ambiguity or irreversible risk appears.
+description: Agree on observable behavior when the user asks to discuss first, or record a contract for high-risk and cross-boundary changes. Skip ordinary local changes with an established contract.
 ---
 
 # Design-First Development
 
-Establish an observable contract before high-risk or cross-boundary implementation.
-Do not impose a design-document gate on ordinary local changes.
+Use for public or cross-module APIs, state machines, recovery/concurrency,
+persistence/fallback policies, shared provider mappings, migrations, and
+architecture with material compatibility or operational risk. Ordinary local
+features, behavior-preserving refactors, narrow fixes, and reviews need no new
+design artifact unless they expose an unresolved material decision.
 
-## Apply the Gate
+## Discussion and Approval
 
-Use this skill when a change affects one or more of these areas:
+When the user says 先討論 or explicitly asks to agree before implementation:
 
-- a public or cross-module API;
-- a state machine, recovery, finalization, or concurrency workflow;
-- persistence, fallback, retry, idempotency, or precedence policy;
-- provider mapping or an adapter contract shared by multiple callers;
-- a shared data model, schema migration, or compatibility boundary;
-- architecture with material operational, safety, or rollback risk.
+- Inspect relevant code and existing decisions with read-only tools.
+- Compare feasible options only when they materially differ. Recommend one and
+  explain the accepted tradeoff; do not manufacture alternatives.
+- State the observable contract and any unresolved decision concisely.
+- Wait for explicit approval before editing implementation or tests. An earlier
+  approval covering the same scope remains valid; do not ask again.
 
-Also apply it when a smaller request exposes unresolved product behavior or a
-decision that cannot be reversed safely.
+For an implementation request, proceed when behavior is clear and remaining
+assumptions are conservative. Ask only about unresolved decisions whose answers
+materially affect the result or require an unauthorized, irreversible action.
+Touching deployment, compatibility, security, or cost does not by itself require
+another approval. Continue independent authorized work while awaiting input.
 
-Do not normally use it for:
+## Record the Contract
 
-- contained behavior changes with an obvious contract;
-- narrow bug fixes that restore established behavior;
-- internal refactors that preserve observable behavior;
-- typo, formatting, documentation, investigation, or review tasks;
-- small features whose acceptance behavior is already explicit and local.
+Reuse the repository's issue, ADR, RFC, or specification when it already covers
+the decision. Otherwise use its existing design location, falling back to
+`docs/designs`. Record material decisions before production implementation;
+avoid duplicate documents or a new artifact for discussion that changes nothing.
 
-## Locate the Contract
+Include only applicable information:
 
-1. Read repository instructions and follow an existing convention for design
-   documents, ADRs, RFCs, or specifications.
-2. Reuse a current issue, ADR, RFC, or spec when it already contains the
-   required observable contract. Do not create a duplicate document solely to
-   satisfy this skill.
-3. When the repository has no convention, use `docs/designs`.
-4. Check the target contract against the quality gate below and correct only
-   the sections needed for the requested change.
+- Goal, scope, caller, and owning boundary.
+- Inputs, outputs, typed outcomes, side effects, and ordering.
+- Invariants, state transitions, precedence, fallback, retry, and idempotency.
+- Compatibility or migration constraints.
+- Observable scenarios with unambiguous pass/fail outcomes.
+- Status (target, adopted, partially adopted, superseded) and adoption gaps.
 
-Conversation may settle a decision, but material decisions must be recorded in
-the selected repository artifact before production implementation begins.
+Describe behavior rather than internal classes or file layout. Use pseudocode
+or a diagram only when it resolves sequence, state, or concurrency ambiguity.
+Scenarios replace generic validation checklists. Update only changed decisions.
 
-## Resolve Missing or Ambiguous Design
-
-When no adequate contract exists:
-
-1. Inspect current behavior and relevant constraints with read-only tools.
-2. Use `contract-first-gate` and wait for approval when the user asks to discuss
-   first or when material alternatives remain.
-3. Otherwise, create a concise contract in the repository's design location and
-   continue in the same turn when the implementation request is clear and all
-   remaining assumptions are conservative and recorded.
-4. Stop for direction when the decision affects data safety, compatibility,
-   deployment, security, cost, or another irreversible boundary.
-5. After the contract is current, use `contract-driven-tdd` for the scoped
-   implementation.
-
-## Contract Quality Gate
-
-Include only applicable items:
-
-- status: target, adopted, partially adopted, or superseded;
-- goal, scope, and non-goals;
-- caller and owning boundary;
-- inputs, outputs, and typed outcomes or error categories;
-- observable side effects and ordering;
-- state transitions and invariants;
-- precedence, fallback, retry, and idempotency rules;
-- compatibility or migration constraints;
-- concrete scenarios that can become contract tests;
-- differences between the target contract and current implementation.
-
-Reject or correct a contract when its observable outcomes remain ambiguous, its
-scenarios cannot determine pass or fail, or it mainly documents internal class,
-function, or file layout.
-
-Prefer this concise shape:
-
-```md
-# <Feature or Boundary>
-
-Status: <target/adopted/partially adopted/superseded>
-
-## Goal
-## Scope and Non-Goals
-## Contract
-## Invariants
-## Scenarios
-## Adoption Gap
-```
-
-Omit empty sections. Scenarios replace generic validation plans and checklists.
-
-## Approval Gate
-
-Do not require separate approval merely because a design artifact was created
-or updated. Require explicit approval only when the user asked to discuss or
-design first, material decisions remain unresolved, or the change requires a
-risky assumption.
+After approval where required, use `contract-driven-tdd` for behavior-changing
+implementation at these boundaries. Documentation-only and non-behavioral work
+can use the normal workflow.
